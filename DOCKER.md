@@ -2,20 +2,48 @@
 
 本文档介绍如何使用 Docker 部署导航网站项目。
 
+## 🇨🇳 中国大陆用户特别说明
+
+由于网络环境的特殊性，为中国大陆用户提供了优化版本：
+
+- `Dockerfile` - 标准版Docker镜像构建文件
+- `Dockerfile.china` - 中国大陆优化版（推荐）
+- `.npmrc` - npm国内镜像源配置
+- `docker-build-china.sh` - 中国大陆优化构建脚本
+
 ## 🐳 Docker 文件说明
 
 - `Dockerfile` - Docker 镜像构建文件
+- `Dockerfile.china` - 中国大陆优化版本
 - `.dockerignore` - Docker 构建时忽略的文件
 - `docker-compose.yml` - Docker Compose 配置文件
-- `docker-build.sh` - 构建脚本
+- `docker-build.sh` - 标准构建脚本
+- `docker-build-china.sh` - 中国大陆优化构建脚本
+- `.npmrc` - npm镜像源配置
 
 ## 🚀 快速开始
+
+### 🇨🇳 中国大陆用户（推荐）
+
+```bash
+# 使用中国优化版构建脚本
+./docker-build-china.sh
+
+# 或使用中国优化版docker-compose
+docker-compose --profile china up -d nav-web-site-china
+
+# 或直接使用中国优化版Dockerfile
+docker build -f Dockerfile.china -t nav-web-site:china .
+```
 
 ### 方法一：使用 Docker Compose（推荐）
 
 ```bash
-# 构建并启动服务
+# 标准版本
 docker-compose up -d
+
+# 中国优化版本
+docker-compose --profile china up -d
 
 # 查看日志
 docker-compose logs -f
@@ -97,7 +125,53 @@ docker inspect nav-web-site | grep Health -A 10
 
 ## 🔍 故障排除
 
-### 1. 端口冲突
+### 🇨🇳 中国大陆网络问题
+
+#### 1. Docker镜像拉取失败
+```bash
+# 错误示例：timeout、connection refused
+# 解决方案：使用阿里云镜像
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:20-alpine
+
+# 或配置Docker镜像加速器
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": [
+    "https://mirror.ccs.tencentyun.com",
+    "https://registry.cn-hangzhou.aliyuncs.com"
+  ]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+#### 2. npm包安装失败
+```bash
+# 错误示例：ETIMEDOUT、ENOTFOUND
+# 解决方案1：使用.npmrc配置
+echo "registry=https://registry.npmmirror.com/" > .npmrc
+
+# 解决方案2：使用中国优化版Dockerfile
+docker build -f Dockerfile.china -t nav-web-site:china .
+
+# 解决方案3：设置代理（如果有）
+export HTTP_PROXY=http://your-proxy:port
+export HTTPS_PROXY=http://your-proxy:port
+docker build --build-arg HTTP_PROXY=$HTTP_PROXY --build-arg HTTPS_PROXY=$HTTPS_PROXY .
+```
+
+#### 3. Alpine包管理器失败
+```bash
+# 错误示例：apk update失败
+# 解决方案：使用阿里云Alpine镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+```
+
+### 🔧 通用问题
+
+#### 1. 端口冲突
 
 如果端口3000被占用，可以修改映射端口：
 
@@ -105,7 +179,7 @@ docker inspect nav-web-site | grep Health -A 10
 docker run -p 8080:3000 nav-web-site:latest
 ```
 
-### 2. 权限问题
+#### 2. 权限问题
 
 确保数据目录有正确的权限：
 
@@ -113,7 +187,7 @@ docker run -p 8080:3000 nav-web-site:latest
 chmod -R 755 data/
 ```
 
-### 3. 查看详细日志
+#### 3. 查看详细日志
 
 ```bash
 # 查看容器日志
@@ -126,7 +200,7 @@ docker logs -f nav-web-site
 docker exec -it nav-web-site sh
 ```
 
-### 4. 重新构建镜像
+#### 4. 重新构建镜像
 
 如果代码有更新，需要重新构建：
 
@@ -134,8 +208,23 @@ docker exec -it nav-web-site sh
 # 删除旧镜像
 docker rmi nav-web-site:latest
 
-# 重新构建
+# 重新构建（中国用户推荐）
+./docker-build-china.sh
+
+# 或标准构建
 docker build -t nav-web-site:latest .
+```
+
+#### 5. Coolify平台特殊问题
+
+```bash
+# 如果在Coolify中构建失败，尝试：
+# 1. 检查Coolify服务器的网络连接
+# 2. 在Coolify中设置环境变量：
+#    HTTP_PROXY=http://your-proxy:port
+#    HTTPS_PROXY=http://your-proxy:port
+# 3. 使用中国优化版Dockerfile
+# 4. 检查Coolify的构建日志获取详细错误信息
 ```
 
 ## 🌐 访问应用

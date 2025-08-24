@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # 中国大陆优化构建参数
+        - NPM_REGISTRY=https://registry.npmmirror.com/
+        - BUILDKIT_INLINE_CACHE=1
     container_name: nav-web-site
     ports:
       - "3000:3000"
@@ -12,18 +16,46 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+      # 中国大陆网络优化
+      - NPM_CONFIG_REGISTRY=https://registry.npmmirror.com/
     volumes:
       # 挂载数据目录以持久化数据
       - ./data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
       interval: 30s
       timeout: 30s
       retries: 3
       start_period: 40s
     networks:
       - nav-network
+
+  # 中国大陆优化版本（备用）
+  nav-web-site-china:
+    build:
+      context: .
+      dockerfile: Dockerfile.china
+    container_name: nav-web-site-china
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 40s
+    networks:
+      - nav-network
+    profiles:
+      - china
 
 networks:
   nav-network:
