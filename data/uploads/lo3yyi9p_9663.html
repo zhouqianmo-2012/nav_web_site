@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学元素周期表 - 认识元素的世界</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --alkali-metal: #ff8a65;
+            --alkaline-earth: #ffb74d;
+            --transition-metal: #4fc3f7;
+            --post-transition: #81c784;
+            --metalloid: #9575cd;
+            --nonmetal: #64b5f6;
+            --halogen: #4dd0e1;
+            --noble-gas: #7986cb;
+            --lanthanide: #f06292;
+            --actinide: #ba68c8;
+            --unknown: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 0;
+        }
+        
+        .element {
+            width: 75px;
+            height: 75px;
+            margin: 2px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            font-size: 0.9rem;
+            color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .element:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .element.dimmed {
+            filter: grayscale(90%);
+            opacity: 0.5;
+            transition: filter 0.3s, opacity 0.3s;
+        }
+        
+        .element-number {
+            font-size: 0.6rem;
+            position: absolute;
+            top: 2px;
+            left: 4px;
+        }
+        
+        .element-symbol {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .element-name {
+            font-size: 0.65rem;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            padding: 0 2px;
+        }
+        
+        .spacer {
+            width: 75px;
+            height: 75px;
+            margin: 2px;
+            visibility: hidden;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        
+        .periodic-table-container {
+            max-width: 1200px;
+            overflow-x: auto;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            border-bottom: none;
+        }
+        
+        .element-detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .element-detail-symbol {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-right: 15px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+        }
+        
+        .element-detail-info h2 {
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .element-detail-info .atomic-number {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .property-row {
+            margin-bottom: 10px;
+        }
+        
+        .property-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .uses-list {
+            padding-left: 20px;
+        }
+        
+        .uses-list li {
+            margin-bottom: 8px;
+        }
+        
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+        
+        .search-box .form-control {
+            padding-left: 40px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-box .bi-search {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #6c757d;
+        }
+        
+        
+        /* 元素分类样式 */
+        .alkali-metal {
+            background-color: var(--alkali-metal);
+        }
+        
+        .alkaline-earth {
+            background-color: var(--alkaline-earth);
+        }
+        
+        .transition-metal {
+            background-color: var(--transition-metal);
+        }
+        
+        .post-transition {
+            background-color: var(--post-transition);
+        }
+        
+        .metalloid {
+            background-color: var(--metalloid);
+        }
+        
+        .nonmetal {
+            background-color: var(--nonmetal);
+        }
+        
+        .halogen {
+            background-color: var(--halogen);
+        }
+        
+        .noble-gas {
+            background-color: var(--noble-gas);
+        }
+        
+        .lanthanide {
+            background-color: var(--lanthanide);
+        }
+        
+        .actinide {
+            background-color: var(--actinide);
+        }
+        
+        .unknown {
+            background-color: var(--unknown);
+        }
+    </style>
+</head>
+<body>
+    <header class="mb-3 py-2">
+        <div class="container text-center">
+            <h3 class="mb-0">化学元素周期表</h3>
+        </div>
+    </header>
+
+    <div class="container mb-4">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" id="elementSearch" placeholder="搜索元素（名称、符号或原子序数）">
+        </div>
+    </div>
+
+    <!-- 元素分类图例将移到页面底部 -->
+
+    <div class="periodic-table-container">
+        <!-- 第1行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element nonmetal" data-element-id="1">
+                <div class="element-number">1</div>
+                <div class="element-symbol">H</div>
+                <div class="element-name">氢</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="element noble-gas" data-element-id="2">
+                <div class="element-number">2</div>
+                <div class="element-symbol">He</div>
+                <div class="element-name">氦</div>
+            </div>
+        </div>
+
+        <!-- 第2行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="3">
+                <div class="element-number">3</div>
+                <div class="element-symbol">Li</div>
+                <div class="element-name">锂</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="4">
+                <div class="element-number">4</div>
+                <div class="element-symbol">Be</div>
+                <div class="element-name">铍</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="element metalloid" data-element-id="5">
+                <div class="element-number">5</div>
+                <div class="element-symbol">B</div>
+                <div class="element-name">硼</div>
+            </div>
+            <div class="element nonmetal" data-element-id="6">
+                <div class="element-number">6</div>
+                <div class="element-symbol">C</div>
+                <div class="element-name">碳</div>
+            </div>
+            <div class="element nonmetal" data-element-id="7">
+                <div class="element-number">7</div>
+                <div class="element-symbol">N</div>
+                <div class="element-name">氮</div>
+            </div>
+            <div class="element nonmetal" data-element-id="8">
+                <div class="element-number">8</div>
+                <div class="element-symbol">O</div>
+                <div class="element-name">氧</div>
+            </div>
+            <div class="element halogen" data-element-id="9">
+                <div class="element-number">9</div>
+                <div class="element-symbol">F</div>
+                <div class="element-name">氟</div>
+            </div>
+            <div class="element noble-gas" data-element-id="10">
+                <div class="element-number">10</div>
+                <div class="element-symbol">Ne</div>
+                <div class="element-name">氖</div>
+            </div>
+        </div>
+
+        <!-- 第3行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="11">
+                <div class="element-number">11</div>
+                <div class="element-symbol">Na</div>
+                <div class="element-name">钠</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="12">
+                <div class="element-number">12</div>
+                <div class="element-symbol">Mg</div>
+                <div class="element-name">镁</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="element post-transition" data-element-id="13">
+                <div class="element-number">13</div>
+                <div class="element-symbol">Al</div>
+                <div class="element-name">铝</div>
+            </div>
+            <div class="element metalloid" data-element-id="14">
+                <div class="element-number">14</div>
+                <div class="element-symbol">Si</div>
+                <div class="element-name">硅</div>
+            </div>
+            <div class="element nonmetal" data-element-id="15">
+                <div class="element-number">15</div>
+                <div class="element-symbol">P</div>
+                <div class="element-name">磷</div>
+            </div>
+            <div class="element nonmetal" data-element-id="16">
+                <div class="element-number">16</div>
+                <div class="element-symbol">S</div>
+                <div class="element-name">硫</div>
+            </div>
+            <div class="element halogen" data-element-id="17">
+                <div class="element-number">17</div>
+                <div class="element-symbol">Cl</div>
+                <div class="element-name">氯</div>
+            </div>
+            <div class="element noble-gas" data-element-id="18">
+                <div class="element-number">18</div>
+                <div class="element-symbol">Ar</div>
+                <div class="element-name">氩</div>
+            </div>
+        </div>
+
+        <!-- 第4行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="19">
+                <div class="element-number">19</div>
+                <div class="element-symbol">K</div>
+                <div class="element-name">钾</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="20">
+                <div class="element-number">20</div>
+                <div class="element-symbol">Ca</div>
+                <div class="element-name">钙</div>
+            </div>
+            <div class="element transition-metal" data-element-id="21">
+                <div class="element-number">21</div>
+                <div class="element-symbol">Sc</div>
+                <div class="element-name">钪</div>
+            </div>
+            <div class="element transition-metal" data-element-id="22">
+                <div class="element-number">22</div>
+                <div class="element-symbol">Ti</div>
+                <div class="element-name">钛</div>
+            </div>
+            <div class="element transition-metal" data-element-id="23">
+                <div class="element-number">23</div>
+                <div class="element-symbol">V</div>
+                <div class="element-name">钒</div>
+            </div>
+            <div class="element transition-metal" data-element-id="24">
+                <div class="element-number">24</div>
+                <div class="element-symbol">Cr</div>
+                <div class="element-name">铬</div>
+            </div>
+            <div class="element transition-metal" data-element-id="25">
+                <div class="element-number">25</div>
+                <div class="element-symbol">Mn</div>
+                <div class="element-name">锰</div>
+            </div>
+            <div class="element transition-metal" data-element-id="26">
+                <div class="element-number">26</div>
+                <div class="element-symbol">Fe</div>
+                <div class="element-name">铁</div>
+            </div>
+            <div class="element transition-metal" data-element-id="27">
+                <div class="element-number">27</div>
+                <div class="element-symbol">Co</div>
+                <div class="element-name">钴</div>
+            </div>
+            <div class="element transition-metal" data-element-id="28">
+                <div class="element-number">28</div>
+                <div class="element-symbol">Ni</div>
+                <div class="element-name">镍</div>
+            </div>
+            <div class="element transition-metal" data-element-id="29">
+                <div class="element-number">29</div>
+                <div class="element-symbol">Cu</div>
+                <div class="element-name">铜</div>
+            </div>
+            <div class="element transition-metal" data-element-id="30">
+                <div class="element-number">30</div>
+                <div class="element-symbol">Zn</div>
+                <div class="element-name">锌</div>
+            </div>
+            <div class="element post-transition" data-element-id="31">
+                <div class="element-number">31</div>
+                <div class="element-symbol">Ga</div>
+                <div class="element-name">镓</div>
+            </div>
+            <div class="element metalloid" data-element-id="32">
+                <div class="element-number">32</div>
+                <div class="element-symbol">Ge</div>
+                <div class="element-name">锗</div>
+            </div>
+            <div class="element metalloid" data-element-id="33">
+                <div class="element-number">33</div>
+                <div class="element-symbol">As</div>
+                <div class="element-name">砷</div>
+            </div>
+            <div class="element nonmetal" data-element-id="34">
+                <div class="element-number">34</div>
+                <div class="element-symbol">Se</div>
+                <div class="element-name">硒</div>
+            </div>
+            <div class="element halogen" data-element-id="35">
+                <div class="element-number">35</div>
+                <div class="element-symbol">Br</div>
+                <div class="element-name">溴</div>
+            </div>
+            <div class="element noble-gas" data-element-id="36">
+                <div class="element-number">36</div>
+                <div class="element-symbol">Kr</div>
+                <div class="element-name">氪</div>
+            </div>
+        </div>
+
+        <!-- 第5行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="37">
+                <div class="element-number">37</div>
+                <div class="element-symbol">Rb</div>
+                <div class="element-name">铷</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="38">
+                <div class="element-number">38</div>
+                <div class="element-symbol">Sr</div>
+                <div class="element-name">锶</div>
+            </div>
+            <div class="element transition-metal" data-element-id="39">
+                <div class="element-number">39</div>
+                <div class="element-symbol">Y</div>
+                <div class="element-name">钇</div>
+            </div>
+            <div class="element transition-metal" data-element-id="40">
+                <div class="element-number">40</div>
+                <div class="element-symbol">Zr</div>
+                <div class="element-name">锆</div>
+            </div>
+            <div class="element transition-metal" data-element-id="41">
+                <div class="element-number">41</div>
+                <div class="element-symbol">Nb</div>
+                <div class="element-name">铌</div>
+            </div>
+            <div class="element transition-metal" data-element-id="42">
+                <div class="element-number">42</div>
+                <div class="element-symbol">Mo</div>
+                <div class="element-name">钼</div>
+            </div>
+            <div class="element transition-metal" data-element-id="43">
+                <div class="element-number">43</div>
+                <div class="element-symbol">Tc</div>
+                <div class="element-name">锝</div>
+            </div>
+            <div class="element transition-metal" data-element-id="44">
+                <div class="element-number">44</div>
+                <div class="element-symbol">Ru</div>
+                <div class="element-name">钌</div>
+            </div>
+            <div class="element transition-metal" data-element-id="45">
+                <div class="element-number">45</div>
+                <div class="element-symbol">Rh</div>
+                <div class="element-name">铑</div>
+            </div>
+            <div class="element transition-metal" data-element-id="46">
+                <div class="element-number">46</div>
+                <div class="element-symbol">Pd</div>
+                <div class="element-name">钯</div>
+            </div>
+            <div class="element transition-metal" data-element-id="47">
+                <div class="element-number">47</div>
+                <div class="element-symbol">Ag</div>
+                <div class="element-name">银</div>
+            </div>
+            <div class="element transition-metal" data-element-id="48">
+                <div class="element-number">48</div>
+                <div class="element-symbol">Cd</div>
+                <div class="element-name">镉</div>
+            </div>
+            <div class="element post-transition" data-element-id="49">
+                <div class="element-number">49</div>
+                <div class="element-symbol">In</div>
+                <div class="element-name">铟</div>
+            </div>
+            <div class="element post-transition" data-element-id="50">
+                <div class="element-number">50</div>
+                <div class="element-symbol">Sn</div>
+                <div class="element-name">锡</div>
+            </div>
+            <div class="element metalloid" data-element-id="51">
+                <div class="element-number">51</div>
+                <div class="element-symbol">Sb</div>
+                <div class="element-name">锑</div>
+            </div>
+            <div class="element metalloid" data-element-id="52">
+                <div class="element-number">52</div>
+                <div class="element-symbol">Te</div>
+                <div class="element-name">碲</div>
+            </div>
+            <div class="element halogen" data-element-id="53">
+                <div class="element-number">53</div>
+                <div class="element-symbol">I</div>
+                <div class="element-name">碘</div>
+            </div>
+            <div class="element noble-gas" data-element-id="54">
+                <div class="element-number">54</div>
+                <div class="element-symbol">Xe</div>
+                <div class="element-name">氙</div>
+            </div>
+        </div>
+
+        <!-- 第6行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="55">
+                <div class="element-number">55</div>
+                <div class="element-symbol">Cs</div>
+                <div class="element-name">铯</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="56">
+                <div class="element-number">56</div>
+                <div class="element-symbol">Ba</div>
+                <div class="element-name">钡</div>
+            </div>
+            <div class="element lanthanide" data-element-id="57-71">
+                <div class="element-number">57-71</div>
+                <div class="element-symbol">La-Lu</div>
+                <div class="element-name">镧系</div>
+            </div>
+            <div class="element transition-metal" data-element-id="72">
+                <div class="element-number">72</div>
+                <div class="element-symbol">Hf</div>
+                <div class="element-name">铪</div>
+            </div>
+            <div class="element transition-metal" data-element-id="73">
+                <div class="element-number">73</div>
+                <div class="element-symbol">Ta</div>
+                <div class="element-name">钽</div>
+            </div>
+            <div class="element transition-metal" data-element-id="74">
+                <div class="element-number">74</div>
+                <div class="element-symbol">W</div>
+                <div class="element-name">钨</div>
+            </div>
+            <div class="element transition-metal" data-element-id="75">
+                <div class="element-number">75</div>
+                <div class="element-symbol">Re</div>
+                <div class="element-name">铼</div>
+            </div>
+            <div class="element transition-metal" data-element-id="76">
+                <div class="element-number">76</div>
+                <div class="element-symbol">Os</div>
+                <div class="element-name">锇</div>
+            </div>
+            <div class="element transition-metal" data-element-id="77">
+                <div class="element-number">77</div>
+                <div class="element-symbol">Ir</div>
+                <div class="element-name">铱</div>
+            </div>
+            <div class="element transition-metal" data-element-id="78">
+                <div class="element-number">78</div>
+                <div class="element-symbol">Pt</div>
+                <div class="element-name">铂</div>
+            </div>
+            <div class="element transition-metal" data-element-id="79">
+                <div class="element-number">79</div>
+                <div class="element-symbol">Au</div>
+                <div class="element-name">金</div>
+            </div>
+            <div class="element transition-metal" data-element-id="80">
+                <div class="element-number">80</div>
+                <div class="element-symbol">Hg</div>
+                <div class="element-name">汞</div>
+            </div>
+            <div class="element post-transition" data-element-id="81">
+                <div class="element-number">81</div>
+                <div class="element-symbol">Tl</div>
+                <div class="element-name">铊</div>
+            </div>
+            <div class="element post-transition" data-element-id="82">
+                <div class="element-number">82</div>
+                <div class="element-symbol">Pb</div>
+                <div class="element-name">铅</div>
+            </div>
+            <div class="element post-transition" data-element-id="83">
+                <div class="element-number">83</div>
+                <div class="element-symbol">Bi</div>
+                <div class="element-name">铋</div>
+            </div>
+            <div class="element post-transition" data-element-id="84">
+                <div class="element-number">84</div>
+                <div class="element-symbol">Po</div>
+                <div class="element-name">钋</div>
+            </div>
+            <div class="element halogen" data-element-id="85">
+                <div class="element-number">85</div>
+                <div class="element-symbol">At</div>
+                <div class="element-name">砹</div>
+            </div>
+            <div class="element noble-gas" data-element-id="86">
+                <div class="element-number">86</div>
+                <div class="element-symbol">Rn</div>
+                <div class="element-name">氡</div>
+            </div>
+        </div>
+
+        <!-- 第7行 -->
+        <div class="d-flex justify-content-center">
+            <div class="element alkali-metal" data-element-id="87">
+                <div class="element-number">87</div>
+                <div class="element-symbol">Fr</div>
+                <div class="element-name">钫</div>
+            </div>
+            <div class="element alkaline-earth" data-element-id="88">
+                <div class="element-number">88</div>
+                <div class="element-symbol">Ra</div>
+                <div class="element-name">镭</div>
+            </div>
+            <div class="element actinide" data-element-id="89-103">
+                <div class="element-number">89-103</div>
+                <div class="element-symbol">Ac-Lr</div>
+                <div class="element-name">锕系</div>
+            </div>
+            <div class="element transition-metal" data-element-id="104">
+                <div class="element-number">104</div>
+                <div class="element-symbol">Rf</div>
+                <div class="element-name">𬬻</div>
+            </div>
+            <div class="element transition-metal" data-element-id="105">
+                <div class="element-number">105</div>
+                <div class="element-symbol">Db</div>
+                <div class="element-name">𬭊</div>
+            </div>
+            <div class="element transition-metal" data-element-id="106">
+                <div class="element-number">106</div>
+                <div class="element-symbol">Sg</div>
+                <div class="element-name">𬭳</div>
+            </div>
+            <div class="element transition-metal" data-element-id="107">
+                <div class="element-number">107</div>
+                <div class="element-symbol">Bh</div>
+                <div class="element-name">𬭛</div>
+            </div>
+            <div class="element transition-metal" data-element-id="108">
+                <div class="element-number">108</div>
+                <div class="element-symbol">Hs</div>
+                <div class="element-name">𬭶</div>
+            </div>
+            <div class="element unknown" data-element-id="109">
+                <div class="element-number">109</div>
+                <div class="element-symbol">Mt</div>
+                <div class="element-name">鿏</div>
+            </div>
+            <div class="element unknown" data-element-id="110">
+                <div class="element-number">110</div>
+                <div class="element-symbol">Ds</div>
+                <div class="element-name">𫟼</div>
+            </div>
+            <div class="element unknown" data-element-id="111">
+                <div class="element-number">111</div>
+                <div class="element-symbol">Rg</div>
+                <div class="element-name">𬬭</div>
+            </div>
+            <div class="element transition-metal" data-element-id="112">
+                <div class="element-number">112</div>
+                <div class="element-symbol">Cn</div>
+                <div class="element-name">𬭚</div>
+            </div>
+            <div class="element unknown" data-element-id="113">
+                <div class="element-number">113</div>
+                <div class="element-symbol">Nh</div>
+                <div class="element-name">鉨</div>
+            </div>
+            <div class="element post-transition" data-element-id="114">
+                <div class="element-number">114</div>
+                <div class="element-symbol">Fl</div>
+                <div class="element-name">𫓧</div>
+            </div>
+            <div class="element unknown" data-element-id="115">
+                <div class="element-number">115</div>
+                <div class="element-symbol">Mc</div>
+                <div class="element-name">镆</div>
+            </div>
+            <div class="element unknown" data-element-id="116">
+                <div class="element-number">116</div>
+                <div class="element-symbol">Lv</div>
+                <div class="element-name">𫟷</div>
+            </div>
+            <div class="element unknown" data-element-id="117">
+                <div class="element-number">117</div>
+                <div class="element-symbol">Ts</div>
+                <div class="element-name">鿬</div>
+            </div>
+            <div class="element unknown" data-element-id="118">
+                <div class="element-number">118</div>
+                <div class="element-symbol">Og</div>
+                <div class="element-name">鿫</div>
+            </div>
+        </div>
+
+        <div class="mt-4 mb-2"></div>
+
+        <!-- 镧系元素 -->
+        <div class="d-flex justify-content-center">
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="element lanthanide" data-element-id="57">
+                <div class="element-number">57</div>
+                <div class="element-symbol">La</div>
+                <div class="element-name">镧</div>
+            </div>
+            <div class="element lanthanide" data-element-id="58">
+                <div class="element-number">58</div>
+                <div class="element-symbol">Ce</div>
+                <div class="element-name">铈</div>
+            </div>
+            <div class="element lanthanide" data-element-id="59">
+                <div class="element-number">59</div>
+                <div class="element-symbol">Pr</div>
+                <div class="element-name">镨</div>
+            </div>
+            <div class="element lanthanide" data-element-id="60">
+                <div class="element-number">60</div>
+                <div class="element-symbol">Nd</div>
+                <div class="element-name">钕</div>
+            </div>
+            <div class="element lanthanide" data-element-id="61">
+                <div class="element-number">61</div>
+                <div class="element-symbol">Pm</div>
+                <div class="element-name">钷</div>
+            </div>
+            <div class="element lanthanide" data-element-id="62">
+                <div class="element-number">62</div>
+                <div class="element-symbol">Sm</div>
+                <div class="element-name">钐</div>
+            </div>
+            <div class="element lanthanide" data-element-id="63">
+                <div class="element-number">63</div>
+                <div class="element-symbol">Eu</div>
+                <div class="element-name">铕</div>
+            </div>
+            <div class="element lanthanide" data-element-id="64">
+                <div class="element-number">64</div>
+                <div class="element-symbol">Gd</div>
+                <div class="element-name">钆</div>
+            </div>
+            <div class="element lanthanide" data-element-id="65">
+                <div class="element-number">65</div>
+                <div class="element-symbol">Tb</div>
+                <div class="element-name">铽</div>
+            </div>
+            <div class="element lanthanide" data-element-id="66">
+                <div class="element-number">66</div>
+                <div class="element-symbol">Dy</div>
+                <div class="element-name">镝</div>
+            </div>
+            <div class="element lanthanide" data-element-id="67">
+                <div class="element-number">67</div>
+                <div class="element-symbol">Ho</div>
+                <div class="element-name">钬</div>
+            </div>
+            <div class="element lanthanide" data-element-id="68">
+                <div class="element-number">68</div>
+                <div class="element-symbol">Er</div>
+                <div class="element-name">铒</div>
+            </div>
+            <div class="element lanthanide" data-element-id="69">
+                <div class="element-number">69</div>
+                <div class="element-symbol">Tm</div>
+                <div class="element-name">铥</div>
+            </div>
+            <div class="element lanthanide" data-element-id="70">
+                <div class="element-number">70</div>
+                <div class="element-symbol">Yb</div>
+                <div class="element-name">镱</div>
+            </div>
+            <div class="element lanthanide" data-element-id="71">
+                <div class="element-number">71</div>
+                <div class="element-symbol">Lu</div>
+                <div class="element-name">镥</div>
+            </div>
+        </div>
+
+        <!-- 锕系元素 -->
+        <div class="d-flex justify-content-center">
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div class="element actinide" data-element-id="89">
+                <div class="element-number">89</div>
+                <div class="element-symbol">Ac</div>
+                <div class="element-name">锕</div>
+            </div>
+            <div class="element actinide" data-element-id="90">
+                <div class="element-number">90</div>
+                <div class="element-symbol">Th</div>
+                <div class="element-name">钍</div>
+            </div>
+            <div class="element actinide" data-element-id="91">
+                <div class="element-number">91</div>
+                <div class="element-symbol">Pa</div>
+                <div class="element-name">镤</div>
+            </div>
+            <div class="element actinide" data-element-id="92">
+                <div class="element-number">92</div>
+                <div class="element-symbol">U</div>
+                <div class="element-name">铀</div>
+            </div>
+            <div class="element actinide" data-element-id="93">
+                <div class="element-number">93</div>
+                <div class="element-symbol">Np</div>
+                <div class="element-name">镎</div>
+            </div>
+            <div class="element actinide" data-element-id="94">
+                <div class="element-number">94</div>
+                <div class="element-symbol">Pu</div>
+                <div class="element-name">钚</div>
+            </div>
+            <div class="element actinide" data-element-id="95">
+                <div class="element-number">95</div>
+                <div class="element-symbol">Am</div>
+                <div class="element-name">镅</div>
+            </div>
+            <div class="element actinide" data-element-id="96">
+                <div class="element-number">96</div>
+                <div class="element-symbol">Cm</div>
+                <div class="element-name">锔</div>
+            </div>
+            <div class="element actinide" data-element-id="97">
+                <div class="element-number">97</div>
+                <div class="element-symbol">Bk</div>
+                <div class="element-name">锫</div>
+            </div>
+            <div class="element actinide" data-element-id="98">
+                <div class="element-number">98</div>
+                <div class="element-symbol">Cf</div>
+                <div class="element-name">锎</div>
+            </div>
+            <div class="element actinide" data-element-id="99">
+                <div class="element-number">99</div>
+                <div class="element-symbol">Es</div>
+                <div class="element-name">锿</div>
+            </div>
+            <div class="element actinide" data-element-id="100">
+                <div class="element-number">100</div>
+                <div class="element-symbol">Fm</div>
+                <div class="element-name">镄</div>
+            </div>
+            <div class="element actinide" data-element-id="101">
+                <div class="element-number">101</div>
+                <div class="element-symbol">Md</div>
+                <div class="element-name">钔</div>
+            </div>
+            <div class="element actinide" data-element-id="102">
+                <div class="element-number">102</div>
+                <div class="element-symbol">No</div>
+                <div class="element-name">锘</div>
+            </div>
+            <div class="element actinide" data-element-id="103">
+                <div class="element-number">103</div>
+                <div class="element-symbol">Lr</div>
+                <div class="element-name">铹</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 元素分类图例 -->
+    <div class="container mt-5 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">元素分类</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-center">
+                    <div class="legend-item">
+                        <div class="legend-color alkali-metal"></div>
+                        <span>碱金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color alkaline-earth"></div>
+                        <span>碱土金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color transition-metal"></div>
+                        <span>过渡金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color post-transition"></div>
+                        <span>后过渡金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color metalloid"></div>
+                        <span>类金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color nonmetal"></div>
+                        <span>非金属</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color halogen"></div>
+                        <span>卤族元素</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color noble-gas"></div>
+                        <span>稀有气体</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color lanthanide"></div>
+                        <span>镧系元素</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color actinide"></div>
+                        <span>锕系元素</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color unknown"></div>
+                        <span>未知分类</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 元素详情模态框 -->
+    <div class="modal fade" id="elementModal" tabindex="-1" aria-labelledby="elementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>元素详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="elementModalBody">
+                    <!-- 元素详情内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 元素数据库
+        const elementsData = {
+            "1": {
+                "name": "氢",
+                "symbol": "H",
+                "atomic_number": 1,
+                "atomic_weight": 1.008,
+                "category": "nonmetal",
+                "discovery_year": 1766,
+                "discovered_by": "亨利·卡文迪许",
+                "melting_point": -259.16,
+                "boiling_point": -252.87,
+                "uses": [
+                    "作为清洁能源和燃料",
+                    "制造氨和甲醇等化学品",
+                    "用于火箭燃料",
+                    "用于焊接和切割金属",
+                    "在食品工业中用于氢化植物油"
+                ],
+                "description": "氢是宇宙中最丰富的元素，也是最轻的化学元素。在地球上，它主要以水和有机化合物的形式存在。氢气是无色、无味、高度易燃的气体。"
+            },
+            "2": {
+                "name": "氦",
+                "symbol": "He",
+                "atomic_number": 2,
+                "atomic_weight": 4.0026,
+                "category": "noble-gas",
+                "discovery_year": 1868,
+                "discovered_by": "皮埃尔·詹森、诺曼·洛克耶和威廉·拉姆塞",
+                "melting_point": -272.2,
+                "boiling_point": -268.9,
+                "uses": [
+                    "填充气球和飞艇",
+                    "作为潜水呼吸气体混合物的成分",
+                    "用于超导磁体冷却",
+                    "用于气相色谱和质谱分析",
+                    "用于气体泄漏检测"
+                ],
+                "description": "氦是一种无色、无味、无毒的惰性气体，是仅次于氢的宇宙中第二丰富的元素。它是所有元素中最不活泼的，熔点最低。"
+            },
+            "3": {
+                "name": "锂",
+                "symbol": "Li",
+                "atomic_number": 3,
+                "atomic_weight": 6.94,
+                "category": "alkali-metal",
+                "discovery_year": 1817,
+                "discovered_by": "约翰·奥古斯特·阿夫韦德松",
+                "melting_point": 180.54,
+                "boiling_point": 1342,
+                "uses": [
+                    "制造可充电电池（手机、笔记本电脑等）",
+                    "航空材料（与铝合金）",
+                    "医药领域治疗双相情感障碍",
+                    "核聚变反应燃料",
+                    "陶瓷和玻璃工业"
+                ],
+                "description": "锂是一种银白色的金属，是所有金属中最轻的，在空气中迅速氧化。它具有很高的比热容，是核聚变的重要材料。"
+            },
+            "4": {
+                "name": "铍",
+                "symbol": "Be",
+                "atomic_number": 4,
+                "atomic_weight": 9.0122,
+                "category": "alkaline-earth",
+                "discovery_year": 1798,
+                "discovered_by": "路易斯-尼古拉斯·沃克兰",
+                "melting_point": 1287,
+                "boiling_point": 2470,
+                "uses": [
+                    "航空航天用轻质高强度合金",
+                    "X射线设备中的窗口材料",
+                    "核反应堆的中子反射材料",
+                    "精密仪器和计算机部件",
+                    "石油和天然气钻探设备"
+                ],
+                "description": "铍是一种钢灰色、坚硬但易碎的金属，熔点高，导热性好。值得注意的是，铍及其化合物有毒，长期接触可能导致慢性铍病。"
+            },
+            "5": {
+                "name": "硼",
+                "symbol": "B",
+                "atomic_number": 5,
+                "atomic_weight": 10.81,
+                "category": "metalloid",
+                "discovery_year": 1808,
+                "discovered_by": "约瑟夫·路易斯·盖-吕萨克和路易斯·雅克·泰纳德",
+                "melting_point": 2076,
+                "boiling_point": 3927,
+                "uses": [
+                    "硼酸用作温和的防腐剂和眼药水",
+                    "制造硼砂（用于清洁剂和化妆品）",
+                    "中子吸收材料（核反应堆控制棒）",
+                    "硼纤维增强材料（高尔夫球杆、钓鱼竿）",
+                    "半导体掺杂材料"
+                ],
+                "description": "硼是一种黑褐色的硬脆半金属，室温下化学性质相对惰性，但高温下非常活泼。它是植物生长的必需微量元素。"
+            },
+            "6": {
+                "name": "碳",
+                "symbol": "C",
+                "atomic_number": 6,
+                "atomic_weight": 12.011,
+                "category": "nonmetal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 3550, // 石墨
+                "boiling_point": 4027, // 石墨
+                "uses": [
+                    "以钻石形式用于珠宝和工业切割工具",
+                    "以石墨形式用于铅笔、润滑剂和电极",
+                    "活性炭用于过滤和净化",
+                    "碳纤维用于轻质高强度复合材料",
+                    "所有有机化学和生命的基础"
+                ],
+                "description": "碳是生命的基础元素，可以形成数百万种不同的化合物。它以多种同素异形体存在，如钻石、石墨和富勒烯，每种形式都有独特的物理性质。"
+            },
+            "7": {
+                "name": "氮",
+                "symbol": "N",
+                "atomic_number": 7,
+                "atomic_weight": 14.007,
+                "category": "nonmetal",
+                "discovery_year": 1772,
+                "discovered_by": "丹尼尔·卢瑟福",
+                "melting_point": -210.1,
+                "boiling_point": -195.8,
+                "uses": [
+                    "生产氨和肥料",
+                    "食品工业中的保鲜剂和冷冻剂",
+                    "制造炸药（硝酸甘油、TNT）",
+                    "充填灯泡和电子元件",
+                    "液氮用于医疗冷冻保存"
+                ],
+                "description": "氮是一种无色无味的气体，构成了地球大气的约78%。它通常以双原子分子(N₂)形式存在，化学性质较为惰性，但其化合物在生物和工业中至关重要。"
+            },
+            "8": {
+                "name": "氧",
+                "symbol": "O",
+                "atomic_number": 8,
+                "atomic_weight": 15.999,
+                "category": "nonmetal",
+                "discovery_year": 1774,
+                "discovered_by": "约瑟夫·普利斯特里和卡尔·威廉·舍勒",
+                "melting_point": -218.79,
+                "boiling_point": -182.95,
+                "uses": [
+                    "支持生命的呼吸",
+                    "医疗氧疗和呼吸设备",
+                    "焊接和金属切割",
+                    "化工生产的氧化过程",
+                    "火箭和航空燃料"
+                ],
+                "description": "氧是地球上第三丰富的元素，以气体形式占地球大气的约21%。它是一种无色无味的气体，高度活泼，是呼吸和燃烧过程的必需元素。"
+            },
+            "9": {
+                "name": "氟",
+                "symbol": "F",
+                "atomic_number": 9,
+                "atomic_weight": 18.998,
+                "category": "halogen",
+                "discovery_year": 1886,
+                "discovered_by": "亨利·莫瓦桑",
+                "melting_point": -219.62,
+                "boiling_point": -188.12,
+                "uses": [
+                    "牙膏中的氟化物预防龋齿",
+                    "制造特氟隆（不粘锅涂层）",
+                    "制冷剂和溶剂",
+                    "半导体和电子工业的刻蚀气体",
+                    "铀浓缩过程中的六氟化铀"
+                ],
+                "description": "氟是最活泼的非金属元素，化学反应性极高，几乎能与所有元素化合。自然界中主要以氟化物形式存在，纯氟为淡黄色有剧毒的气体。"
+            },
+            "10": {
+                "name": "氖",
+                "symbol": "Ne",
+                "atomic_number": 10,
+                "atomic_weight": 20.180,
+                "category": "noble-gas",
+                "discovery_year": 1898,
+                "discovered_by": "威廉·拉姆塞和莫里斯·特拉弗斯",
+                "melting_point": -248.59,
+                "boiling_point": -246.08,
+                "uses": [
+                    "霓虹灯和标志",
+                    "高压电气设备",
+                    "激光技术",
+                    "制冷剂",
+                    "半导体制造中的保护气体"
+                ],
+                "description": "氖是一种无色无味的惰性气体，化学性质极其稳定。它在通电时会发出明亮的橙红色光，因此广泛用于霓虹灯。在地球大气中含量极低。"
+            },
+            "11": {
+                "name": "钠",
+                "symbol": "Na",
+                "atomic_number": 11,
+                "atomic_weight": 22.990,
+                "category": "alkali-metal",
+                "discovery_year": 1807,
+                "discovered_by": "汉弗里·戴维",
+                "melting_point": 97.72,
+                "boiling_point": 883,
+                "uses": [
+                    "食盐（氯化钠）是最常见的钠化合物",
+                    "钠灯用于街道照明",
+                    "制造肥皂（钠与脂肪反应）",
+                    "钠冷却剂用于核反应堆",
+                    "氢氧化钠（烧碱）用于制造纸张、肥皂和清洁剂"
+                ],
+                "description": "钠是一种银白色的软金属，活泼度高，能与水剧烈反应释放氢气。它是地壳中第六丰富的元素，也是人体必需的电解质之一。"
+            },
+            "12": {
+                "name": "镁",
+                "symbol": "Mg",
+                "atomic_number": 12,
+                "atomic_weight": 24.305,
+                "category": "alkaline-earth",
+                "discovery_year": 1808,
+                "discovered_by": "汉弗里·戴维",
+                "melting_point": 650,
+                "boiling_point": 1090,
+                "uses": [
+                    "轻质结构合金（汽车、航空航天）",
+                    "手机、相机和电子设备外壳",
+                    "镁火用于烟花和信号弹",
+                    "农业和园艺肥料",
+                    "镁化合物用于医药（如氧化镁作为胃药）"
+                ],
+                "description": "镁是一种银白色的轻金属，地壳中含量丰富，海水中也有大量镁盐。它燃烧时产生明亮的白光。在生物体内，镁是叶绿素的重要组成部分。"
+            },
+            "13": {
+                "name": "铝",
+                "symbol": "Al",
+                "atomic_number": 13,
+                "atomic_weight": 26.982,
+                "category": "post-transition",
+                "discovery_year": 1825,
+                "discovered_by": "汉斯·克里斯蒂安·厄斯特德",
+                "melting_point": 660.32,
+                "boiling_point": 2519,
+                "uses": [
+                    "建筑材料（框架、窗户、门）",
+                    "交通工具（汽车、飞机、船舶）",
+                    "食品和饮料包装（罐、箔）",
+                    "电气传输线",
+                    "厨具和日用品"
+                ],
+                "description": "铝是地壳中含量最丰富的金属，银白色，质轻但强度高，极易形成表面氧化膜防止进一步腐蚀。它导电导热性良好，且易于回收再利用。"
+            },
+            "14": {
+                "name": "硅",
+                "symbol": "Si",
+                "atomic_number": 14,
+                "atomic_weight": 28.085,
+                "category": "metalloid",
+                "discovery_year": 1824,
+                "discovered_by": "勒纳斯·贝采利乌斯",
+                "melting_point": 1414,
+                "boiling_point": 3265,
+                "uses": [
+                    "半导体工业（微处理器、太阳能电池）",
+                    "玻璃制造（二氧化硅）",
+                    "建筑材料（水泥、陶瓷）",
+                    "硅树脂和硅油（润滑剂、防水剂）",
+                    "人造假肢和整容手术中的硅胶"
+                ],
+                "description": "硅是地壳中含量第二丰富的元素（仅次于氧），呈暗灰色带金属光泽。它是现代电子和计算机产业的基础，也是大多数岩石和矿物的主要成分。"
+            },
+            "15": {
+                "name": "磷",
+                "symbol": "P",
+                "atomic_number": 15,
+                "atomic_weight": 30.974,
+                "category": "nonmetal",
+                "discovery_year": 1669,
+                "discovered_by": "亨尼希·勃兰德",
+                "melting_point": 44.15, // 白磷
+                "boiling_point": 280.5, // 白磷
+                "uses": [
+                    "肥料（磷酸盐是植物生长必需）",
+                    "火柴和烟花中的磷化物",
+                    "洗涤剂添加剂",
+                    "牙膏中的防蛀成分",
+                    "食品添加剂（如磷酸盐用于可乐）"
+                ],
+                "description": "磷有多种同素异形体，最常见的白磷具有高度反应性，在空气中自燃。在生物体内，磷是DNA、RNA和ATP的关键组成部分，对能量传递至关重要。"
+            },
+            "16": {
+                "name": "硫",
+                "symbol": "S",
+                "atomic_number": 16,
+                "atomic_weight": 32.06,
+                "category": "nonmetal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 115.21,
+                "boiling_point": 444.6,
+                "uses": [
+                    "硫酸制造（工业最重要的化学品之一）",
+                    "农业肥料和杀虫剂",
+                    "医药（治疗皮肤病和硫磺药物）",
+                    "橡胶硫化（改善轮胎等橡胶制品的性能）",
+                    "火药和火柴的成分"
+                ],
+                "description": "硫是一种淡黄色的非金属，在自然界中较为丰富，常以硫化物和硫酸盐形式存在于矿石中。它具有特殊的气味（如臭鸡蛋），在生物体内是蛋白质的重要成分。"
+            },
+            "17": {
+                "name": "氯",
+                "symbol": "Cl",
+                "atomic_number": 17,
+                "atomic_weight": 35.45,
+                "category": "halogen",
+                "discovery_year": 1774,
+                "discovered_by": "卡尔·威廉·舍勒",
+                "melting_point": -101.5,
+                "boiling_point": -34.04,
+                "uses": [
+                    "水处理消毒剂",
+                    "家用漂白剂（次氯酸钠）",
+                    "PVC塑料制造",
+                    "杀菌剂和消毒剂",
+                    "纸浆漂白剂"
+                ],
+                "description": "氯是一种黄绿色的有刺激性气味的气体，高活性且有毒。它作为盐（氯化钠）的形式在海水中大量存在，是维持人体电解质平衡的必需元素。"
+            },
+            "18": {
+                "name": "氩",
+                "symbol": "Ar",
+                "atomic_number": 18,
+                "atomic_weight": 39.948,
+                "category": "noble-gas",
+                "discovery_year": 1894,
+                "discovered_by": "约翰·威廉·斯特拉特和威廉·拉姆塞",
+                "melting_point": -189.35,
+                "boiling_point": -185.85,
+                "uses": [
+                    "白炽灯和荧光灯填充气体",
+                    "焊接中的保护气体",
+                    "空气隔离层（双层玻璃中）",
+                    "激光技术",
+                    "冷冻和冷却工艺"
+                ],
+                "description": "氩是一种无色无味的惰性气体，构成地球大气的约0.93%，是最丰富的稀有气体。它在常温常压下极其稳定，几乎不与任何其他元素反应。"
+            },
+            "19": {
+                "name": "钾",
+                "symbol": "K",
+                "atomic_number": 19,
+                "atomic_weight": 39.098,
+                "category": "alkali-metal",
+                "discovery_year": 1807,
+                "discovered_by": "汉弗里·戴维",
+                "melting_point": 63.38,
+                "boiling_point": 759,
+                "uses": [
+                    "农业肥料（钾是植物生长必需元素）",
+                    "食盐替代品（氯化钾）",
+                    "肥皂和玻璃制造",
+                    "医药（调节体内电解质平衡）",
+                    "食品加工和保存"
+                ],
+                "description": "钾是一种银白色的软金属，极易氧化，需存放在矿物油中防止与空气接触。它是生物体内必需的元素，对神经传导和肌肉收缩至关重要。"
+            },
+            "20": {
+                "name": "钙",
+                "symbol": "Ca",
+                "atomic_number": 20,
+                "atomic_weight": 40.078,
+                "category": "alkaline-earth",
+                "discovery_year": 1808,
+                "discovered_by": "汉弗里·戴维",
+                "melting_point": 842,
+                "boiling_point": 1484,
+                "uses": [
+                    "建筑材料（石灰石、水泥、石膏）",
+                    "钢铁冶金助熔剂",
+                    "食品添加剂和营养补充剂",
+                    "农业中的土壤改良剂",
+                    "乳制品中的钙强化"
+                ],
+                "description": "钙是地壳中第五丰富的元素，银白色，较容易氧化。它是人体中含量最多的矿物质，构成骨骼和牙齿的主要成分，同时在血液凝固和肌肉功能中扮演重要角色。"
+            },
+            "26": {
+                "name": "铁",
+                "symbol": "Fe",
+                "atomic_number": 26,
+                "atomic_weight": 55.845,
+                "category": "transition-metal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 1538,
+                "boiling_point": 2862,
+                "uses": [
+                    "钢铁制造（建筑、桥梁、车辆）",
+                    "机械和工具制造",
+                    "家用电器和容器",
+                    "医学中用于治疗贫血",
+                    "铁磁材料（磁铁、电动机、变压器）"
+                ],
+                "description": "铁是地壳中含量第四丰富的元素，也是地球核心的主要成分。它是一种银灰色的金属，容易生锈（与氧气和水反应）。铁在生物体内是血红蛋白的关键成分，负责运输氧气。"
+            },
+            "29": {
+                "name": "铜",
+                "symbol": "Cu",
+                "atomic_number": 29,
+                "atomic_weight": 63.546,
+                "category": "transition-metal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 1085,
+                "boiling_point": 2562,
+                "uses": [
+                    "电气导线和电子设备",
+                    "水管和供热系统",
+                    "铜合金（如黄铜、青铜）制造各种工具和装饰品",
+                    "农业杀菌剂",
+                    "建筑屋顶和装饰材料"
+                ],
+                "description": "铜是一种红褐色的金属，是人类最早使用的金属之一。它具有出色的导电性和导热性，耐腐蚀性好。铜在生物体内是多种酶的辅因子，对神经系统发育至关重要。"
+            },
+            "47": {
+                "name": "银",
+                "symbol": "Ag",
+                "atomic_number": 47,
+                "atomic_weight": 107.87,
+                "category": "transition-metal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 961.78,
+                "boiling_point": 2162,
+                "uses": [
+                    "珠宝和银器制造",
+                    "摄影术（胶卷中的卤化银）",
+                    "电子元件（接触点和电路）",
+                    "医学上的抗菌剂",
+                    "镜子和特种玻璃的涂层"
+                ],
+                "description": "银是一种有光泽的白色贵金属，具有最高的导电性和导热性。它相对稳定，但会与硫化物反应变黑。银具有抗菌性能，历史上被用于保存食物和治疗感染。"
+            },
+            "79": {
+                "name": "金",
+                "symbol": "Au",
+                "atomic_number": 79,
+                "atomic_weight": 196.97,
+                "category": "transition-metal",
+                "discovery_year": "远古时代",
+                "discovered_by": "未知",
+                "melting_point": 1064.18,
+                "boiling_point": 2856,
+                "uses": [
+                    "珠宝和装饰品",
+                    "货币储备和投资",
+                    "电子元件（接点和连接器）",
+                    "牙科应用（牙冠和填充物）",
+                    "航天技术中的反射涂层"
+                ],
+                "description": "金是一种黄色的稀有贵金属，化学性质极其稳定，不与空气、水或大多数化学试剂反应。它极其延展，可以锤打成薄如单原子层的金箔。金因其稀有性、美丽和耐腐蚀性，自古以来就被视为财富和权力的象征。"
+            },
+            "92": {
+                "name": "铀",
+                "symbol": "U",
+                "atomic_number": 92,
+                "atomic_weight": 238.03,
+                "category": "actinide",
+                "discovery_year": 1789,
+                "discovered_by": "马丁·海因里希·克拉普罗特",
+                "melting_point": 1132.2,
+                "boiling_point": 4131,
+                "uses": [
+                    "核能发电的燃料",
+                    "核武器原料",
+                    "医学同位素生产",
+                    "飞机配重和防护罩",
+                    "染色玻璃和陶瓷（铀玻璃呈黄绿色荧光）"
+                ],
+                "description": "铀是一种银白色的放射性金属，是自然界中最重的天然元素。它的放射性较弱，但其同位素铀-235能进行核裂变，释放大量能量，是核能和核武器的主要原料。"
+            }
+        };
+        
+        // 为所有元素添加点击事件
+        document.querySelectorAll('.element').forEach(element => {
+            element.addEventListener('click', function() {
+                const elementId = this.getAttribute('data-element-id');
+                showElementDetails(elementId);
+            });
+        });
+        
+        // 显示元素详细信息
+        function showElementDetails(elementId) {
+            let elementData;
+            
+            // 元素全拼映射表（用于显示元素详情中的拼音）
+            const fullPinyinMap = {
+                "氢": "qīng", "氦": "hài", "锂": "lǐ", "铍": "pí", "硼": "péng", "碳": "tàn", "氮": "dàn", "氧": "yǎng", "氟": "fú", "氖": "nǎi",
+                "钠": "nà", "镁": "měi", "铝": "lǚ", "硅": "guī", "磷": "lín", "硫": "liú", "氯": "lǜ", "氩": "yà", "钾": "jiǎ", "钙": "gài",
+                "钪": "kàng", "钛": "tài", "钒": "fán", "铬": "gè", "锰": "měng", "铁": "tiě", "钴": "gǔ", "镍": "niè", "铜": "tóng", "锌": "xīn",
+                "镓": "jiā", "锗": "zhě", "砷": "shēn", "硒": "xī", "溴": "xiù", "氪": "kè", "铷": "rú", "锶": "sī", "钇": "yǐ", "锆": "gào",
+                "铌": "ní", "钼": "mù", "锝": "dé", "钌": "liǎo", "铑": "lǎo", "钯": "bǎ", "银": "yín", "镉": "gé", "铟": "yīn", "锡": "xī",
+                "锑": "tī", "碲": "dì", "碘": "diǎn", "氙": "xiān", "铯": "sè", "钡": "bèi", "镧": "lán", "铈": "shì", "镨": "pǔ", "钕": "nǚ",
+                "钷": "pō", "钐": "shàn", "铕": "yǒu", "钆": "gá", "铽": "tè", "镝": "dī", "钬": "huǒ", "铒": "ěr", "铥": "diū", "镱": "yì",
+                "镥": "lǔ", "铪": "hā", "钽": "tǎn", "钨": "wū", "铼": "lái", "锇": "é", "铱": "yī", "铂": "bó", "金": "jīn", "汞": "gǒng",
+                "铊": "tā", "铅": "qiān", "铋": "bì", "钋": "pō", "砹": "ài", "氡": "dōng", "钫": "fāng", "镭": "léi", "锕": "ā", "钍": "tǔ",
+                "镤": "pú", "铀": "yóu", "镎": "ná", "钚": "bù", "镅": "méi", "锔": "jú", "锫": "cuò", "锎": "kǎi", "锿": "āi", "镄": "fěi",
+                "钔": "mén", "锘": "nuò", "铹": "lǎo", "镧系": "lán xì", "锕系": "ā xì",
+                "𬬻": "lú", "𬭊": "dū", "𬭳": "xī", "𬭛": "bō", "𬭶": "hēi", "鿏": "mài", "𫟼": "dá", 
+                "𬬭": "lún", "𬭚": "cōng", "鉨": "nà", "𫓧": "fú", "镆": "mò", "𫟷": "lì", "鿬": "tiān", "鿫": "ào"
+            };
+            
+            // 处理范围ID (如镧系元素 57-71)
+            if (elementId.includes('-')) {
+                // 对于系列元素，可以显示概述信息
+                if (elementId === '57-71') {
+                    elementData = {
+                        "name": "镧系元素",
+                        "symbol": "La-Lu",
+                        "atomic_number": "57-71",
+                        "category": "lanthanide",
+                        "description": "镧系元素是原子序数从57（镧）到71（镥）的15种化学元素。这些元素具有相似的化学性质，通常以+3价离子形式存在。它们在现代技术中非常重要，用于制造强力磁铁、激光材料、高折射率玻璃和催化剂等。"
+                    };
+                } else if (elementId === '89-103') {
+                    elementData = {
+                        "name": "锕系元素",
+                        "symbol": "Ac-Lr",
+                        "atomic_number": "89-103",
+                        "category": "actinide",
+                        "description": "锕系元素是原子序数从89（锕）到103（铹）的15种化学元素。所有锕系元素都具有放射性，其中只有钍和铀在自然界中相对丰富。这些元素在核能和核武器中具有重要应用，某些锕系元素如镅-241用于烟雾探测器。"
+                    };
+                }
+            } else {
+                // 获取单个元素数据
+                elementData = elementsData[elementId];
+            }
+            
+            if (!elementData) {
+                // 对于数据库中没有的元素，显示基础信息
+                const clickedElement = document.querySelector(`[data-element-id="${elementId}"]`);
+                if (clickedElement) {
+                    const symbol = clickedElement.querySelector('.element-symbol').textContent;
+                    const name = clickedElement.querySelector('.element-name').textContent;
+                    const number = clickedElement.querySelector('.element-number').textContent;
+                    const category = Array.from(clickedElement.classList).find(cls => cls !== 'element');
+                    
+                    elementData = {
+                        "name": name,
+                        "symbol": symbol,
+                        "atomic_number": number,
+                        "category": category,
+                        "description": `关于${name}(${symbol})的详细数据尚未添加到数据库中。这是一个原子序数为${number}的元素。`
+                    };
+                } else {
+                    elementData = {
+                        "name": "未知元素",
+                        "symbol": "?",
+                        "atomic_number": elementId,
+                        "category": "unknown",
+                        "description": "没有找到该元素的数据。"
+                    };
+                }
+            }
+            
+            // 生成模态框内容
+            let modalContent = `
+                <div class="element-detail-header">
+                    <div class="element-detail-symbol ${elementData.category}">
+                        ${elementData.symbol}
+                    </div>
+                    <div class="element-detail-info">
+                        <div class="atomic-number"><i class="bi bi-hash"></i> 原子序数: ${elementData.atomic_number}</div>
+                        <h2>${elementData.name} <small class="text-muted">${fullPinyinMap[elementData.name] || ''}</small></h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p><i class="bi bi-info-circle-fill me-2 text-primary"></i>${elementData.description}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加物理性质部分（如果有数据）
+            if (elementData.melting_point || elementData.boiling_point || elementData.atomic_weight) {
+                modalContent += `
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h4><i class="bi bi-clipboard-data me-2 text-primary"></i>物理性质</h4>
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                `;
+                
+                if (elementData.atomic_weight) {
+                    modalContent += `
+                        <div class="property-row">
+                            <span class="property-label"><i class="bi bi-bullseye me-2 text-secondary"></i>原子质量:</span> 
+                            <span>${elementData.atomic_weight} u</span>
+                        </div>
+                    `;
+                }
+                
+                if (elementData.melting_point) {
+                    modalContent += `
+                        <div class="property-row">
+                            <span class="property-label"><i class="bi bi-thermometer-half me-2 text-danger"></i>熔点:</span> 
+                            <span>${elementData.melting_point} °C</span>
+                        </div>
+                    `;
+                }
+                
+                if (elementData.boiling_point) {
+                    modalContent += `
+                        <div class="property-row">
+                            <span class="property-label"><i class="bi bi-cloud me-2 text-info"></i>沸点:</span> 
+                            <span>${elementData.boiling_point} °C</span>
+                        </div>
+                    `;
+                }
+                
+                if (elementData.discovered_by && elementData.discovery_year) {
+                    modalContent += `
+                        <div class="property-row">
+                            <span class="property-label"><i class="bi bi-calendar-event me-2 text-success"></i>发现:</span> 
+                            <span>${elementData.discovery_year}年 由${elementData.discovered_by}</span>
+                        </div>
+                    `;
+                }
+                
+                modalContent += `
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 添加用途部分（如果有数据）
+            if (elementData.uses && elementData.uses.length > 0) {
+                modalContent += `
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h4><i class="bi bi-tools me-2 text-primary"></i>常见用途</h4>
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <ul class="uses-list">
+                `;
+                
+                elementData.uses.forEach(use => {
+                    modalContent += `<li><i class="bi bi-check2-circle me-2 text-success"></i>${use}</li>`;
+                });
+                
+                modalContent += `
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 更新模态框内容并显示
+            document.getElementById('elementModalBody').innerHTML = modalContent;
+            const elementModal = new bootstrap.Modal(document.getElementById('elementModal'));
+            elementModal.show();
+        }
+        
+        // 汉字拼音映射表
+        const pinyinMap = {
+            // 元素名称拼音首字母映射(简写)
+            "氢": "q", "氦": "h", "锂": "l", "铍": "p", "硼": "p", "碳": "t", "氮": "d", "氧": "y", "氟": "f", "氖": "n",
+            "钠": "n", "镁": "m", "铝": "l", "硅": "g", "磷": "l", "硫": "l", "氯": "l", "氩": "y", "钾": "j", "钙": "g",
+            "钪": "k", "钛": "t", "钒": "f", "铬": "g", "锰": "m", "铁": "t", "钴": "g", "镍": "n", "铜": "t", "锌": "x",
+            "镓": "j", "锗": "z", "砷": "s", "硒": "x", "溴": "x", "氪": "k", "铷": "r", "锶": "s", "钇": "y", "锆": "g",
+            "铌": "n", "钼": "m", "锝": "d", "钌": "l", "铑": "l", "钯": "b", "银": "y", "镉": "g", "铟": "y", "锡": "x",
+            "锑": "t", "碲": "d", "碘": "d", "氙": "x", "铯": "s", "钡": "b", "镧": "l", "铈": "s", "镨": "p", "钕": "n",
+            "钷": "p", "钐": "s", "铕": "y", "钆": "g", "铽": "t", "镝": "d", "钬": "h", "铒": "e", "铥": "d", "镱": "y",
+            "镥": "l", "铪": "h", "钽": "t", "钨": "w", "铼": "l", "锇": "e", "铱": "y", "铂": "b", "金": "j", "汞": "g",
+            "铊": "t", "铅": "q", "铋": "b", "钋": "p", "砹": "a", "氡": "d", "钫": "f", "镭": "l", "锕": "a", "钍": "t",
+            "镤": "p", "铀": "y", "镎": "n", "钚": "b", "镅": "m", "锔": "j", "锫": "c", "锎": "k", "锿": "e", "镄": "f",
+            "钔": "m", "锘": "n", "铹": "l", "𬬻": "l", "𬭊": "d", "𬭳": "s", "𬭛": "b", "𬭶": "h", "鿏": "m", "𫟼": "d", 
+            "𬬭": "l", "𬭚": "c", "鉨": "n", "𫓧": "f", "镆": "m", "𫟷": "l", "鿬": "t", "鿫": "a",
+            // 添加镧系和锕系的映射
+            "镧系": "lx", "锕系": "ax"
+        };
+        
+        // 元素全拼映射表
+        const fullPinyinMap = {
+            "氢": "qing", "氦": "hai", "锂": "li", "铍": "pi", "硼": "peng", "碳": "tan", "氮": "dan", "氧": "yang", "氟": "fu", "氖": "nai",
+            "钠": "na", "镁": "mei", "铝": "lv", "硅": "gui", "磷": "lin", "硫": "liu", "氯": "lv", "氩": "ya", "钾": "jia", "钙": "gai",
+            "钪": "kang", "钛": "tai", "钒": "fan", "铬": "ge", "锰": "meng", "铁": "tie", "钴": "gu", "镍": "nie", "铜": "tong", "锌": "xin",
+            "镓": "jia", "锗": "zhe", "砷": "shen", "硒": "xi", "溴": "xiu", "氪": "ke", "铷": "ru", "锶": "si", "钇": "yi", "锆": "gao",
+            "铌": "ni", "钼": "mu", "锝": "de", "钌": "liao", "铑": "lao", "钯": "ba", "银": "yin", "镉": "ge", "铟": "yin", "锡": "xi",
+            "锑": "ti", "碲": "di", "碘": "dian", "氙": "xian", "铯": "se", "钡": "bei", "镧": "lan", "铈": "shi", "镨": "pu", "钕": "nv",
+            "钷": "po", "钐": "shan", "铕": "you", "钆": "ga", "铽": "te", "镝": "di", "钬": "huo", "铒": "er", "铥": "diu", "镱": "yi",
+            "镥": "lu", "铪": "ha", "钽": "tan", "钨": "wu", "铼": "lai", "锇": "e", "铱": "yi", "铂": "bo", "金": "jin", "汞": "gong",
+            "铊": "ta", "铅": "qian", "铋": "bi", "钋": "po", "砹": "ai", "氡": "dong", "钫": "fang", "镭": "lei", "锕": "a", "钍": "tu",
+            "镤": "pu", "铀": "you", "镎": "na", "钚": "bu", "镅": "mei", "锔": "ju", "锫": "cuo", "锎": "kai", "锿": "ai", "镄": "fei",
+            "钔": "men", "锘": "nuo", "铹": "lao", "镧系": "lanxi", "锕系": "axi"
+        };
+        
+        // 搜索功能
+        document.getElementById('elementSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let hasMatch = false;
+            
+            document.querySelectorAll('.element').forEach(element => {
+                const symbol = element.querySelector('.element-symbol').textContent.toLowerCase();
+                const name = element.querySelector('.element-name').textContent;
+                const nameLower = name.toLowerCase();
+                const number = element.querySelector('.element-number').textContent;
+                // 获取拼音首字母和全拼
+                const pinyinShort = pinyinMap[name] || "";
+                const pinyinFull = fullPinyinMap[name] || "";
+                
+                if (symbol.includes(searchTerm) || 
+                    nameLower.includes(searchTerm) || 
+                    number.includes(searchTerm) || 
+                    pinyinShort.includes(searchTerm) || 
+                    pinyinFull.includes(searchTerm)) {
+                    element.classList.remove('dimmed');
+                    hasMatch = true;
+                } else {
+                    element.classList.add('dimmed');
+                }
+            });
+            
+            // 如果搜索框为空，显示所有元素
+            if (searchTerm === '') {
+                document.querySelectorAll('.element').forEach(element => {
+                    element.classList.remove('dimmed');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

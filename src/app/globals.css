@@ -1,0 +1,314 @@
+@import "tailwindcss";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+  /* Flare Paper主题色彩变量 */
+  --primary: #AA9A73;
+  --primary-foreground: #F8F6F1;
+  --secondary: #E8E4DC;
+  --secondary-foreground: #4C432E;
+  --background: #F8F6F1;
+  --foreground: #4C432E;
+  --muted: #F0EDE6;
+  --muted-foreground: #8B7F6B;
+  --border: #D4CFC4;
+  --input: #F8F6F1;
+  --ring: #AA9A73;
+  --card: #F8F6F1;
+  --card-foreground: #4C432E;
+  --popover: #F8F6F1;
+  --popover-foreground: #4C432E;
+  --destructive: #C4704F;
+  --destructive-foreground: #F8F6F1;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --font-sans: var(--font-roboto);
+}
+
+/* Paper主题深色模式（保持温暖色调） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #D4C4A0;
+    --primary-foreground: #2A241A;
+    --secondary: #3A342A;
+    --secondary-foreground: #E8E4DC;
+    --background: #2A241A;
+    --foreground: #E8E4DC;
+    --muted: #3A342A;
+    --muted-foreground: #A69B87;
+    --border: #4A443A;
+    --input: #3A342A;
+    --ring: #D4C4A0;
+    --card: #3A342A;
+    --card-foreground: #E8E4DC;
+    --popover: #3A342A;
+    --popover-foreground: #E8E4DC;
+    --destructive: #E07A5F;
+    --destructive-foreground: #2A241A;
+  }
+}
+
+/* 全局样式 */
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-roboto), Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-width: 1200px; /* 最小宽度，专注桌面端 */
+  transition: background-color 0.3s;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* 选择文本样式 */
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* 焦点样式 */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Paper主题卡片悬停效果 */
+.card-hover {
+  transition: all 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(76, 67, 46, 0.15), 0 3px 8px rgba(76, 67, 46, 0.1);
+}
+
+/* 无选择样式 */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Flare Paper主题特定样式 */
+.flare-container {
+  padding: 25px 40px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.flare-header-container {
+  padding: 15px 40px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.flare-compact-container {
+  padding: 8px 40px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.flare-title {
+  font-weight: 700;
+  font-size: 4em;
+  display: inline-block;
+  color: var(--foreground);
+}
+
+.flare-section-title {
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: var(--foreground);
+}
+
+/* 分类区域样式 */
+.category-section {
+  position: relative;
+}
+
+.category-section:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+  opacity: 0.3;
+}
+
+/* Paper主题特有的温暖阴影效果 */
+.paper-shadow {
+  box-shadow: 0 2px 8px rgba(76, 67, 46, 0.1), 0 1px 3px rgba(76, 67, 46, 0.08);
+}
+
+.paper-shadow-hover:hover {
+  box-shadow: 0 4px 16px rgba(76, 67, 46, 0.15), 0 2px 6px rgba(76, 67, 46, 0.1);
+}
+
+/* 长条形卡片样式 */
+.strip-card {
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+  height: 36px;
+  min-width: 80px;
+  max-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.strip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(76, 67, 46, 0.12), 0 2px 4px rgba(76, 67, 46, 0.08);
+}
+
+/* 长条形卡片文字样式 */
+.strip-card-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .flare-container {
+    width: 90%;
+  }
+
+  .flare-header-container {
+    width: 90%;
+  }
+
+  .flare-compact-container {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .flare-container {
+    width: 90%;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .flare-header-container {
+    width: 90%;
+    padding: 12px 20px;
+    margin: 0 auto;
+  }
+
+  .flare-compact-container {
+    width: 90%;
+    padding: 6px 20px;
+    margin: 0 auto;
+  }
+
+  .flare-title {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 375px) {
+  .flare-container {
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .flare-header-container {
+    width: 100%;
+    padding: 10px 20px;
+    margin: 0 auto;
+  }
+
+  .flare-compact-container {
+    width: 100%;
+    padding: 5px 20px;
+    margin: 0 auto;
+  }
+
+  .flare-title {
+    font-size: 2em;
+  }
+}
+
+@media (min-width: 1201px) {
+  .flare-container {
+    width: 90%;
+    padding: 50px 250px;
+  }
+
+  .flare-header-container {
+    width: 90%;
+    padding: 20px 250px;
+  }
+
+  .flare-compact-container {
+    width: 90%;
+    padding: 10px 250px;
+  }
+}

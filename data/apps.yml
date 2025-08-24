@@ -1,0 +1,32 @@
+items:
+  - id: 1hyyhvynqiqmdk7bu6h
+    name: 秦始皇
+    url: https://mzgfjht8.web.zhouqianmo.com
+    icon: calculator
+    description: '上传的HTML文件: 9663.html'
+    category: 历史
+    isHtmlFile: true
+    htmlFilePath: data\uploads\coz802v0_9663.html
+    createdAt: '2025-07-26T12:03:33.641Z'
+    updatedAt: 2025-08-24T12:45:56.238Z
+    private: false
+  - id: xbukdg208wbmdka434s
+    name: 化学元素周期表
+    url: https://kdpfiiby.web.zhouqianmo.com
+    icon: book
+    description: 提供交互式化学元素周期表，包含元素信息和分类。
+    category: 科学
+    isHtmlFile: true
+    htmlFilePath: data\uploads\rrzoeqhd_9663.html
+    createdAt: '2025-07-26T13:21:30.844Z'
+    updatedAt: 2025-08-24T12:45:56.238Z
+    private: false
+  - id: app_1756039556228
+    name: 历史天气查询
+    url: https://r4ws84o0woc80o8ogsgkg8os.demo.test52dzhp.com/
+    icon: calendar-date
+    description: 历史天气查询
+    category: 科学
+    isHtmlFile: false
+    createdAt: '2025-08-24T12:45:56.228Z'
+    updatedAt: 2025-08-24T12:45:56.238Z

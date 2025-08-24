@@ -1,0 +1,20 @@
+title: 周千墨HTML导航站
+description: 周千墨的个人书签导航
+footer: 由 <a href="https://github.com/soulteary/docker-flare">Flare</a> ❤️ 强力驱动
+theme: blackboard
+showWeather: false
+location: 北京市
+openAppNewTab: true
+openBookmarkNewTab: true
+showTitle: true
+greetings: ''
+showSearchComponent: true
+disabledSearchAutoFocus: false
+showDateTime: true
+showApps: true
+showBookmarks: true
+hideSettingButton: false
+hideHelpButton: false
+enableEncryptedLink: false
+iconMode: DEFAULT
+keepLetterCase: false

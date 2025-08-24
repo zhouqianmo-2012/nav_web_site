@@ -1,0 +1,22 @@
+categories:
+  - id: tools
+    name: 工具
+    order: 1
+  - id: social
+    name: 社交
+    order: 2
+  - id: dev
+    name: 开发
+    order: 3
+  - id: entertainment
+    name: 娱乐
+    order: 4
+items:
+  - id: example-1
+    name: 示例链接
+    url: https://example.com
+    icon: globe
+    description: 这是一个示例链接
+    category: tools
+    createdAt: 2025-07-24T15:11:55.108Z
+    updatedAt: 2025-07-24T15:11:55.108Z
